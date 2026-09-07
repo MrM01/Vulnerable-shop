@@ -4,19 +4,17 @@ const db = require('../db');
 
 const router = express.Router();
 
-// [VULN-1] Spoofing — Inyección SQL en el login
-// La consulta se arma concatenando strings en lugar de usar parámetros
-// preparados (viola ASVS V5.3.4). Un atacante puede enviar
-// email = "' OR '1'='1' -- " y entrar sin conocer ninguna contraseña.
-//
-// [VULN-4] Spoofing — JWT con secreto débil y sin expiración corta
-// El secreto está hardcodeado y es trivial, y el token no expira
-// (viola ASVS V3.5.3 / V9.1).
-const JWT_SECRET = 'shop-secret'; // secreto débil y predecible, a propósito
+// [VULN-1] Spoofing — Inyección SQL en el login — CORREGIDO
+// Consulta parametrizada en vez de concatenación de strings (ASVS V5.3.4).
 
-// [VULN-7] Denial of Service — sin límite de intentos de login
-// No hay rate limiting ni bloqueo tras varios intentos fallidos
-// (viola ASVS V11.1.4).
+// Corregido [VULN-4]: el secreto ya no vive en el código fuente, se carga
+// desde una variable de entorno (.env, fuera del control de versiones) y
+// debe ser largo y aleatorio (ASVS V3.5.3).
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('Falta la variable de entorno JWT_SECRET (revisa el archivo .env)');
+}
+
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -29,7 +27,8 @@ router.post('/login', (req, res) => {
 
   const token = jwt.sign(
     { id: user.id, email: user.email, role: user.role },
-    JWT_SECRET
+    JWT_SECRET, // nosemgrep: javascript.jsonwebtoken.security.jwt-hardcode.hardcoded-jwt-secret -- Falso positivo: JWT_SECRET viene de process.env.JWT_SECRET (variable de entorno vía dotenv), no está hardcodeado.
+    { expiresIn: '1h' } // Corregido [VULN-4]: expiración obligatoria (ASVS V9.1)
   );
 
   res.json({ token, user });

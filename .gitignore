@@ -3,3 +3,4 @@ shop.db
 server.log
 uploads/*
 !uploads/.gitkeep
+.env
