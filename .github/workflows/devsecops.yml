@@ -1,1 +1,60 @@
-name: DevSecOps Pipeline on: push: branches: [main] pull_request: branches: [main] permissions: contents: read jobs: secret-scan: name: Gitleaks (Secret Scanning) runs-on: ubuntu-latest steps: - name: Checkout uses: actions/checkout@v4 with: fetch-depth: 0 - name: Run Gitleaks uses: gitleaks/gitleaks-action@v3 env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} GITLEAKS_ENABLE_COMMENTS: false sast: name: Semgrep (SAST) runs-on: ubuntu-latest container: image: semgrep/semgrep steps: - name: Checkout uses: actions/checkout@v4 - name: Run Semgrep (reglas OWASP Top 10 + JavaScript/Node) run: semgrep scan --config p/owasp-top-ten --config p/javascript --error sca: name: Trivy (SCA - Software Composition Analysis) runs-on: ubuntu-latest steps: - name: Checkout uses: actions/checkout@v4 - name: Run Trivy filesystem scan uses: aquasecurity/trivy-action@0.36.0 with: scan-type: fs scan-ref: . severity: HIGH,CRITICAL exit-code: '1' ignore-unfixed: true
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: Gitleaks (Secret Scanning)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Nota de seguridad: en marzo 2026 hubo un ataque a la cadena de
+      # suministro de Trivy (CVE-2026-33634) que reescribió tags de
+      # versión para inyectar malware. Por eso aquí y en el job de Trivy
+      # fijamos versiones específicas y verificadas, en vez de @master.
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: false
+
+  sast:
+    name: Semgrep (SAST)
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep (reglas OWASP Top 10 + JavaScript/Node)
+        run: semgrep scan --config p/owasp-top-ten --config p/javascript --error
+
+  sca:
+    name: Trivy (SCA - Software Composition Analysis)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Versión fijada a 0.36.0 (posterior al incidente de marzo 2026 y
+      # verificada), no @master, por la misma razón que en Gitleaks.
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          ignore-unfixed: true
