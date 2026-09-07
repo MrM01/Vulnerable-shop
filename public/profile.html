@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Perfil - Vulnerable Shop</title>
+<style>
+  body { font-family: sans-serif; max-width: 400px; margin: 40px auto; }
+  input { width: 100%; padding: 8px; margin-bottom: 12px; }
+  nav a { margin-right: 12px; }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="/index.html">Catálogo</a>
+    <a href="/login.html">Login</a>
+    <a href="/profile.html">Perfil</a>
+    <a href="/upload.html">Feedback</a>
+  </nav>
+  <h1>Ver perfil por id</h1>
+  <input id="userId" placeholder="id de usuario (ej. 1, 2, 3)" value="2" />
+  <button onclick="loadProfile()">Consultar</button>
+  <pre id="profileResult"></pre>
+  <script src="/js/app.js"></script>
+</body>
+</html>

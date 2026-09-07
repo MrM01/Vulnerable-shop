@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Vulnerable Shop</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 40px auto; }
+  .product { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .review { border-top: 1px solid #eee; padding: 8px 0; }
+  nav a { margin-right: 12px; }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="/index.html">Catálogo</a>
+    <a href="/login.html">Login</a>
+    <a href="/profile.html">Perfil</a>
+    <a href="/upload.html">Feedback</a>
+  </nav>
+  <h1>Vulnerable Shop</h1>
+  <p><em>Aplicación con vulnerabilidades intencionales para fines académicos. No usar en producción.</em></p>
+  <div id="products"></div>
+
+  <h2>Dejar una reseña</h2>
+  <input id="reviewProductId" placeholder="id de producto (ej. 1)" value="1" />
+  <input id="reviewAuthor" placeholder="tu nombre" />
+  <input id="reviewComment" placeholder="comentario" />
+  <button onclick="submitReview()">Enviar reseña</button>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

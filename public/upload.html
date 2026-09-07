@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Feedback - Vulnerable Shop</title>
+<style>
+  body { font-family: sans-serif; max-width: 400px; margin: 40px auto; }
+  nav a { margin-right: 12px; }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="/index.html">Catálogo</a>
+    <a href="/login.html">Login</a>
+    <a href="/profile.html">Perfil</a>
+    <a href="/upload.html">Feedback</a>
+  </nav>
+  <h1>Enviar feedback con archivo adjunto</h1>
+  <form id="feedbackForm">
+    <input type="file" name="attachment" id="attachment" />
+    <button type="submit">Enviar</button>
+  </form>
+  <pre id="uploadResult"></pre>
+  <script src="/js/app.js"></script>
+</body>
+</html>
